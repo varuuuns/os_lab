@@ -1,0 +1,25 @@
+.body {
+    font: 1rem/1.5 var(--bs-font-sans-serif);
+    color: whitesmoke;
+}
+.h1{
+    margin-left: 120px;
+    
+}
+.a{
+    color: var(--bs-blue);
+}
+.container{
+    position: relative;
+    align-items: center;
+    font-size: xx-large;
+}
+.btn-light{
+    position: absolute;
+    font-weight: bolder;
+    
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1; 
+}
