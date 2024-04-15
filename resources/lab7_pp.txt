@@ -1,0 +1,94 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+struct Process {
+    int id;
+    int p;
+    int at;
+    int bt;
+    int wt;
+    int tat;
+    int ct;
+    int rt;  
+};
+
+void priority_preemptive(vector<Process>& proc) {
+    int n = proc.size();
+    sort(proc.begin(),proc.end(),[](const Process& a,const Process& b){
+        if(a.at==b.at){
+            return a.p<b.p;
+        }else{
+            return a.at<b.at;
+        };
+    });
+
+    vector<int> compproc;
+    int temp_ct = 0;
+
+    if(proc[0].at!=temp_ct){
+        temp_ct=proc[0].at;
+    }
+    
+    while (compproc.size() < n) {
+        int nxt_proc = -1;
+        int min_p=INT16_MAX;
+
+        for (int i = 0; i < n; i++) {
+            if (proc[i].at <= temp_ct && proc[i].rt > 0) {
+                if (proc[i].p < min_p) {
+                    min_p = proc[i].p;
+                    nxt_proc = i;
+                }
+            }
+        }
+
+        if (nxt_proc != -1) {
+            temp_ct++;
+            proc[nxt_proc].rt--;
+            if (proc[nxt_proc].rt  == 0) {
+                proc[nxt_proc].ct = temp_ct;
+                proc[nxt_proc].tat = proc[nxt_proc].ct - proc[nxt_proc].at;
+                proc[nxt_proc].wt = proc[nxt_proc].tat - proc[nxt_proc].bt;
+                compproc.push_back(nxt_proc);
+            }
+        } else {
+            temp_ct++;
+        }
+    }
+    sort(proc.begin(),proc.end(),[](const Process& a,const Process& b){
+        return a.id<b.id;
+    });
+
+    cout << "Proc\t PR\t AT\t BT\t CT\t TAT\t WT\n";
+    for (int i = 0; i < n; ++i) {
+        cout << "P" << proc[i].id <<"\t " << proc[i].p << "\t " << proc[i].at << "\t "
+             << proc[i].bt << "\t " << proc[i].ct << "\t " << proc[i].tat
+             << "\t " << proc[i].wt << "\n";
+    }
+}
+
+int main() {
+    int n;
+    cout << "Enter the no.of processes:";
+    cin >> n;
+    vector<Process> proc(n);
+
+    for (int i = 0; i < n; i++) {
+        cout << "Enter priority of process P" << i + 1 << ":";
+        cin >> proc[i].p;
+        cout << "Enter arrival time of process P" << i + 1 << ":";
+        cin >> proc[i].at;
+        cout << "Enter burst time of process P" << i + 1 << ":";
+        cin >> proc[i].bt;
+        proc[i].id = i + 1;
+        proc[i].ct = 0;
+        proc[i].tat = 0;
+        proc[i].wt = 0;
+        proc[i].rt = proc[i].bt;
+    }
+
+    priority_preemptive(proc);
+
+    return 0;
+}

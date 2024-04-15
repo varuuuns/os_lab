@@ -1,0 +1,80 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+bool comp1(vector<int> &j1, vector<int> &j2){
+    if (j1[1] == j2[1])
+        return j1[0] < j2[0];
+    else
+        return j1[1] < j2[1];
+}
+
+int main(){
+    int num_jobs;
+    cout << "Enter the number of jobs: ";
+    cin >> num_jobs;
+
+    vector<vector<int>> jobs;
+    for (int i = 0; i < num_jobs; i++){
+        cout << "Enter details for Job " << i + 1 << " id ,at , bt : ";
+        vector<int> job_details(3);
+        for (int j = 0; j < 3; j++)
+        {
+
+            cin >> job_details[j];
+        }
+        job_details.push_back(0);
+        job_details.push_back(0);
+        job_details.push_back(0);
+        job_details.push_back(job_details[2]);
+        jobs.push_back(job_details);
+    }
+
+    vector<bool> visited(num_jobs, false);
+    int ct = 0;
+
+    sort(jobs.begin(), jobs.end(), comp1);
+    int currbt = -1;
+    int currid = -1;
+    int completed_jobs = 0;
+    while (completed_jobs < num_jobs){
+        int id = -1;
+        int maxbt = INT_MIN;
+        for (int i = 0; i < num_jobs; i++){
+            if (jobs[i][1] <= ct && !visited[i]){
+                if (jobs[i][6] > maxbt){
+                    maxbt = jobs[i][6];
+                    id = i;
+                }
+            }
+        }
+        if(maxbt==currbt){
+            id=currid;
+        }
+        if (id == -1){
+            ct++;
+            continue;
+        }
+        jobs[id][6]--;
+        if (jobs[id][6] == 0){
+            visited[id] = true;
+            completed_jobs++;
+            jobs[id][3] = ct + 1;
+            jobs[id][4] = jobs[id][3] - jobs[id][1];
+            jobs[id][5] = jobs[id][4] - jobs[id][2];
+            currbt=-1;
+            currid=-1;
+        }
+        else{
+            currbt=jobs[id][6];
+            currid=id;
+        }
+        ct++;
+    }
+    cout << "Job ID\tArrival Time\tBurst Time\tCompletion Time\tTurnaround Time\tWaiting Time\n";
+    for (int i = 0; i < num_jobs; i++)
+    {
+        cout << jobs[i][0] << "\t" << jobs[i][1] << "\t\t" << jobs[i][2] << "\t\t"
+             << jobs[i][3] << "\t\t" << jobs[i][4] << "\t\t" << jobs[i][5] << endl;
+    }
+    return 0;
+}

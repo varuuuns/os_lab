@@ -1,0 +1,107 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+struct Processes {
+    int pid; 
+    int at; 
+    int bt; 
+    int ct;
+    int wt;
+    int tat;
+    int rbt; 
+};
+
+bool compAT(struct Processes a, struct Processes b) {
+    int x = a.at;
+    int y = b.at;
+    return x < y;
+}
+
+bool compPID(struct Processes a, struct Processes b) {
+    int x = a.pid;
+    int y = b.pid;
+    return x < y;
+}
+
+int main() {
+    int n,id;
+    int tq;
+    queue<int> q;
+    int ct = 0;
+    int comp = 0; 
+
+    cout << "Enter total number of processes:";
+    cin >> n;
+
+    bool visited[n] = { false };
+    vector<Processes> proc(n);
+
+    cout << "Enter the time quantum:";
+    cin >> tq;
+
+    for (int i = 0; i < n; i++) {
+        cout << "Enter Process " << i+1 << " Arrival Time:";
+        cin >> proc[i].at;
+        proc[i].pid = i;
+
+        cout << "Enter Process " << i+1 << " Burst Time:";
+        cin >> proc[i].bt;
+        proc[i].rbt = proc[i].bt;
+    }
+
+    sort(proc.begin(), proc.end(), compAT);
+
+    q.push(0);
+    visited[0] = true;
+
+    if(proc[0].at!=ct){
+        ct=proc[0].at;
+    }
+
+    while (comp != n) {
+        id = q.front();
+        q.pop();
+    
+        if (proc[id].rbt - tq > 0) {
+            proc[id].rbt -= tq;
+            ct += tq;
+        } 
+        else {
+            ct += proc[id].rbt;
+            proc[id].rbt = 0;
+            comp++;
+            proc[id].ct = ct;
+            proc[id].tat = proc[id].ct - proc[id].at;
+            proc[id].wt = proc[id].tat - proc[id].bt;
+        }
+
+        for (int i = 1; i < n; i++) {
+            if (proc[i].rbt > 0 && proc[i].at <= ct && !visited[i]) {
+                q.push(i);
+                visited[i] = true;
+            }
+        }
+
+        if (proc[id].rbt > 0){
+            q.push(id);
+        }
+        
+        if (q.empty()) {
+            for (int i = 1; i < n; i++) {
+                if (proc[i].rbt > 0) {
+                    q.push(i);
+                    visited[i] = true;
+                    break;
+                }
+            }
+        }
+    }
+
+    sort(proc.begin(), proc.end(), compPID);
+
+    cout << "PNo. \tAT\tBT\tCT\tTAT\tWT\n";
+    for (int i = 0; i < n; i++){
+        cout << "P" << i+1 << "\t" << proc[i].at << "\t" << proc[i].bt << "\t" << proc[i].ct << "\t" << proc[i].tat << "\t" << proc[i].wt << endl;
+    }
+    return 0;
+}

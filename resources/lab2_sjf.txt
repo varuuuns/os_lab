@@ -1,0 +1,61 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+vector<int> find_min(vector<int> at, vector<int> bt, int k){
+    int m = INT_MAX, index = 0;
+    for(int i = 0; i < at.size(); i++){
+        if(at[i] <= k && at[i] != -1){
+            if(bt[i] <= m){
+                m = bt[i];
+                index = i;
+            }
+        }
+    }
+    return {m, index};
+}
+
+void sjf(vector<int> at, vector<int> bt){
+    int n = at.size(), k = 0;
+    int ct[n];
+    int tat[n];
+    int wt[n];
+    vector<int> t1 = at;
+    vector<int> t2 = bt;
+
+    for(int i = 0; i < n; i++){
+        vector<int> x = find_min(t1, t2, k);
+        int j = x[1];
+        ct[j] = x[0] + k;
+        tat[j] = (ct[j] - at[j]);
+        wt[j] = (tat[j] - bt[j]);
+        k += x[0];
+        t1[j] = -1;
+        t2[j] = -1;
+    }
+
+    cout << "Process\tArrival\tBurst\tCompletion\tTurnaround\tWaiting" << endl;
+    for (int i = 0; i < n; i++) {
+        cout << i << "\t\t" << at[i] << "\t\t" << bt[i] << "\t\t\t" << ct[i] << "\t\t\t" << tat[i] << "\t\t" << wt[i] << endl;
+    }
+}
+
+int main(){
+    vector<int> at = {6, 0, 3, 2};
+    vector<int> bt = {2, 1, 2, 2};
+    sjf(at, bt);
+    // int n;
+    // cout<<"Enter number of process: ";
+    // cin>>n;
+    // vector<int> at;
+    // vector<int> bt;
+    // for(int i=0;i<n;i++){
+    //     cout<<"Enter arrival time of Process "<<i;
+    //     cin>>at[i];
+    //     cout<<"Enter burst time of Process "<<i;
+    //     cin>>bt[i];
+    // }
+    // sjf(at,bt);
+    return 0;
+}
+
+
