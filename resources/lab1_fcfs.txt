@@ -1,72 +1,47 @@
-#include<bits/stdc++.h>
+#include <bits/stdc++.h>
 using namespace std;
-
-int search(vector<int> arr,int x){
-    for(int i=0;i<arr.size();i++){
-        if(arr[i]==x) return i;
-    }
+struct jobs
+{
+    int AT;
+    int BT;
+};
+bool comp(jobs j1, jobs j2)
+{
+    return j1.AT < j2.AT;
 }
-
-void fcfs(vector<int> arrival,vector<int> burst){
-    int n=burst.size();
-    vector<int> temp1=arrival;
-    vector<int> temp2=burst;
-    vector<int> process;
-    for(int i=0;i<n;i++) process.push_back(i);
-    for(int i=0;i<n;i++){
-        for(int j=0;j<n;j++){
-            if(arrival[i]>arrival[j]){
-                swap(temp2[i],temp2[j]);
-                swap(temp1[i],temp1[j]);
-                swap(process[i],process[j]);
-            }
+int main()
+{
+    int n = 4;                                           
+    vector<jobs> job = {{3, 5}, {2, 3}, {1, 4}, {4, 2}}; 
+    sort(job.begin(), job.end(), comp);
+    vector<int> gantt;
+    int ct = 0;
+    gantt.push_back(0);
+    for (int i = 0; i < n; i++)
+    {
+        if (job[i].AT <= ct)
+        {
+            ct += job[i].BT;
+            gantt.push_back(ct);
+        }
+        else
+        {
+            int w = job[i].AT - ct;
+            ct += w + job[i].BT;
+            gantt.push_back(ct);
         }
     }
-    for(int i=0;i<n;i++){
-        cout<<temp1[i]<<" ";
-        cout<<endl;
-    }
-    for(int i=0;i<n;i++){
-        cout<<temp2[i]<<" ";
-        cout<<endl;
-    } 
-    vector<int> ct;
-    vector<int> tat;
-    vector<int> wt;
-    int temp=0;
-    for(int i=0;i<n;i++){
-        ct.push_back(temp2[i]+temp);
-        tat.push_back(ct[i]-temp1[i]);
-        wt.push_back(tat[i]-temp2[i]);
-        temp+=temp2[i];
-    }
-    for(int i=0;i<n;i++){
-        cout<<ct[i]<<" ";
+    vector<int> TAT(n), WT(n);
+    for (int i = 0; i < n; i++)
+    {
+        TAT[i] = gantt[i + 1] - job[i].AT;
+        WT[i] = TAT[i] - job[i].BT;
     }
 
-    // for(int i=1;i<=n;i++){
-    //     int t=search(process,i);
-    //     cout<<"Process "<<i<<" ";
-    //     cout<<"Arrival Time "<<temp1[t]<<" ";
-    //     cout<<"Burst Time "<<temp2[t]<<" ";
-    //     cout<<"Completion Time "<<ct[t]<<" ";
-    //     cout<<"Turn Around Time "<<tat[t]<<" ";
-    //     cout<<"Waiting Time "<<wt[t]<<endl;
-    // }
-}
-
-int main(){
-    int n;
-    cout<<"Enter number of processess: ";
-    cin>>n;
-    vector<int> at(n);
-    vector<int> bt(n);
-    for(int i=1;i<=n;i++){
-        cout<<"Enter Arrival Time of Process "<<i<<": ";
-        cin>>at[i];
-        cout<<"Burst Arrival Time of Process "<<i<<": ";
-        cin>>bt[i];
+    cout << "\n\nJob\tArrival Time\tBurst Time\tComplettion TIme\tTurnaround Time\tWaiting Time\n";
+    for (int i = 0; i < n; i++)
+    {
+        cout << i + 1 << "\t" << job[i].AT << "\t\t" << job[i].BT << "\t\t" << gantt[i + 1] << "\t\t\t" << TAT[i] << "\t\t" << WT[i] << "\n";
     }
-    fcfs(at,bt);
     return 0;
 }
